@@ -20,6 +20,9 @@ namespace CurvasDeBezier
         Point l4 = new Point();
         Point l5 = new Point();
         Point l6 = new Point();
+        Point l7 = new Point();
+        Point l8 = new Point();
+        Point l9 = new Point();
         public Form1()
         {
             Contador = 0;
@@ -50,9 +53,11 @@ namespace CurvasDeBezier
                 CalcularCurvas2doGrado(points, DistanciaMayor(points, np));
             else if(Convert.ToInt32(comboBox1.Text)==4)
                 CalcularCurvas3doGrado(points, DistanciaMayor(points, np));
-            
+            else if (Convert.ToInt32(comboBox1.Text) == 5)
+                CalcularCurvas4doGrado(points, DistanciaMayor(points, np));
+
             //panel1.CreateGraphics().DrawBeziers(Returnpen(Color.Black), points);
-                
+
         }
 
         Pen Returnpen(Color color)
@@ -145,10 +150,10 @@ namespace CurvasDeBezier
             Point resultado = new Point();
             int rx1, ry1,rx2,ry2;
 
-            rx1 = (int)((cp[1].X - cp[0].X) * t) + cp[0].X;
-            ry1 = (int)((cp[1].Y - cp[0].Y) * t) + cp[0].Y;
-            rx2 = (int)((cp[2].X - cp[1].X) * t) + cp[1].X;
-            ry2 = (int)((cp[2].Y - cp[1].Y) * t) + cp[1].Y;
+            rx1 = (int)Math.Round((cp[1].X - cp[0].X) * t) + cp[0].X;
+            ry1 = (int)Math.Round((cp[1].Y - cp[0].Y) * t) + cp[0].Y;
+            rx2 = (int)Math.Round((cp[2].X - cp[1].X) * t) + cp[1].X;
+            ry2 = (int)Math.Round((cp[2].Y - cp[1].Y) * t) + cp[1].Y;
             resultado.X = (int)Math.Round(((rx2- rx1) * t) + rx1);
             resultado.Y = (int)Math.Round(((ry2 - ry1) * t) + ry1);
             
@@ -160,9 +165,9 @@ namespace CurvasDeBezier
 
         void dibujarCurvaActual(Point [] curva, int n)
         {
-            for(int i=0;i<n;i++)
+            for(int i=0;i<n-1;i++)
             {
-                panel1.CreateGraphics().DrawRectangle(Returnpen(Color.Blue), curva[i].X, curva[i].Y, 1, 1);
+                panel1.CreateGraphics().DrawLine(Returnpen(Color.Blue), curva[i].X, curva[i].Y, curva[i+1].X, curva[1+i].Y);
             }
         }
 
@@ -191,16 +196,16 @@ namespace CurvasDeBezier
             Point resultado = new Point();
             int rx1, ry1, rx2, ry2,rx3,ry3,rx4,ry4,rx5,ry5;
 
-            rx1 = (int)((cp[1].X - cp[0].X) * t) + cp[0].X;
-            ry1 = (int)((cp[1].Y - cp[0].Y) * t) + cp[0].Y;
-            rx2 = (int)((cp[2].X - cp[1].X) * t) + cp[1].X;
-            ry2 = (int)((cp[2].Y - cp[1].Y) * t) + cp[1].Y;
-            rx3 = (int)((cp[3].X - cp[2].X) * t) + cp[2].X;
-            ry3 = (int)((cp[3].Y - cp[2].Y) * t) + cp[2].Y;
-            rx4 = (int)((rx2 - rx1) * t) + rx1;
-            ry4 = (int)((ry2 - ry1) * t) + ry1;
-            rx5 = (int)((rx3 - rx2) * t) + rx2;
-            ry5 = (int)((ry3 - ry2) * t) + ry2;
+            rx1 = (int)Math.Round((cp[1].X - cp[0].X) * t) + cp[0].X;
+            ry1 = (int)Math.Round((cp[1].Y - cp[0].Y) * t) + cp[0].Y;
+            rx2 = (int)Math.Round((cp[2].X - cp[1].X) * t) + cp[1].X;
+            ry2 = (int)Math.Round((cp[2].Y - cp[1].Y) * t) + cp[1].Y;
+            rx3 = (int)Math.Round((cp[3].X - cp[2].X) * t) + cp[2].X;
+            ry3 = (int)Math.Round((cp[3].Y - cp[2].Y) * t) + cp[2].Y;
+            rx4 = (int)Math.Round((rx2 - rx1) * t) + rx1;
+            ry4 = (int)Math.Round((ry2 - ry1) * t) + ry1;
+            rx5 = (int)Math.Round((rx3 - rx2) * t) + rx2;
+            ry5 = (int)Math.Round((ry3 - ry2) * t) + ry2;
           
             resultado.X = (int)Math.Round(((rx5 - rx4) * t) + rx4);
             resultado.Y = (int)Math.Round(((ry5 - ry4) * t) + ry4);
@@ -238,7 +243,82 @@ namespace CurvasDeBezier
             return resultado;
         }
 
-   
+
+        void CalcularCurvas4doGrado(Point[] cp, int np)
+        {
+            //List<Point> curve = new List<Point>();
+            Point[] curve = new Point[np];
+            float t;
+            t = (float)1 / (float)(np - 1);
+
+            for (int i = 0; i < np; i++)
+            {
+                //panel1.CreateGraphics().Clear(Color.White);
+                panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l1.X, l1.Y, l2.X, l2.Y);
+                panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l2.X, l2.Y, l3.X, l3.Y);
+                panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l3.X, l3.Y, l4.X, l4.Y);
+                panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l5.X, l5.Y, l6.X, l6.Y);
+                panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l6.X, l6.Y, l7.X, l7.Y);
+                panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l8.X, l8.Y, l9.X, l9.Y);
+               
+                curve[i] = (GetPuntoCurva4doGrado(cp, i * t));
+                
+                panel1.CreateGraphics().DrawLines(Returnpen(Color.Black), points);
+
+                
+                dibujarCurvaActual(curve, i);
+
+            }
+        }
+
+        Point GetPuntoCurva4doGrado(Point[] cp, double t)
+        {
+            Point resultado = new Point();
+            int rx1, ry1, rx2, ry2, rx3, ry3, rx4, ry4, rx5, ry5,rx6,ry6,rx7,ry7, rx8, ry8, rx9, ry9;
+
+            rx1 = (int)Math.Round((cp[1].X - cp[0].X) * t) + cp[0].X;
+            ry1 = (int)Math.Round((cp[1].Y - cp[0].Y) * t) + cp[0].Y;
+            rx2 = (int)Math.Round((cp[2].X - cp[1].X) * t) + cp[1].X;
+            ry2 = (int)Math.Round((cp[2].Y - cp[1].Y) * t) + cp[1].Y;
+            rx3 = (int)Math.Round((cp[3].X - cp[2].X) * t) + cp[2].X;
+            ry3 = (int)Math.Round((cp[3].Y - cp[2].Y) * t) + cp[2].Y;
+            rx4 = (int)Math.Round((cp[4].X - cp[3].X) * t) + cp[3].X;
+            ry4 = (int)Math.Round((cp[4].Y - cp[3].Y) * t) + cp[3].Y;
+            rx5 = (int)Math.Round((rx2 - rx1) * t) + rx1;
+            ry5 = (int)Math.Round((ry2 - ry1) * t) + ry1;
+            rx6 = (int)Math.Round((rx3 - rx2) * t) + rx2;
+            ry6 = (int)Math.Round((ry3 - ry2) * t) + ry2;
+            rx7 = (int)Math.Round((rx4 - rx3) * t) + rx3;
+            ry7 = (int)Math.Round((ry4 - ry3) * t) + ry3;
+            rx8 = (int)Math.Round((rx6 - rx5) * t) + rx5;
+            ry8 = (int)Math.Round((ry6 - ry5) * t) + ry5;
+            rx9 = (int)Math.Round((rx7 - rx6) * t) + rx6;
+            ry9 = (int)Math.Round((ry7 - ry6) * t) + ry6;
+
+
+            resultado.X = (int)Math.Round(((rx9 - rx8) * t) + rx8);
+            resultado.Y = (int)Math.Round(((ry9 - ry8) * t) + ry8);
+            panel1.CreateGraphics().DrawLine(Returnpen(Color.Green), rx1, ry1, rx2, ry2);
+            panel1.CreateGraphics().DrawLine(Returnpen(Color.Green), rx2, ry2, rx3, ry3);
+            panel1.CreateGraphics().DrawLine(Returnpen(Color.Green), rx3, ry3, rx4, ry4);
+            panel1.CreateGraphics().DrawLine(Returnpen(Color.Blue), rx5, ry5, rx6, ry6);
+            panel1.CreateGraphics().DrawLine(Returnpen(Color.Blue), rx6, ry6, rx7, ry7);
+            panel1.CreateGraphics().DrawLine(Returnpen(Color.Red), rx8, ry8, rx9, ry9);
+            l1 = new Point(rx1, ry1);
+            l2 = new Point(rx2, ry2);
+            l3 = new Point(rx3, ry3);
+            l4 = new Point(rx4, ry4);
+            l5 = new Point(rx5, ry5);
+            l6 = new Point(rx6, ry6);
+            l7 = new Point(rx7, ry7);
+            l8 = new Point(rx8, ry8);
+            l9 = new Point(rx9, ry9);
+            return resultado;
+        }
+
+
+
+
 
 
     }

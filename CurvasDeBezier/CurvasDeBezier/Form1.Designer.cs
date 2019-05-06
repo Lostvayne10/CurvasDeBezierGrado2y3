@@ -48,7 +48,8 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "3",
-            "4"});
+            "4",
+            "5"});
             this.comboBox1.Location = new System.Drawing.Point(1044, 99);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(39, 24);
@@ -61,9 +62,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(1026, 70);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(95, 17);
+            this.label1.Size = new System.Drawing.Size(92, 17);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Elegir Grados";
+            this.label1.Text = "Elegir Puntos";
             // 
             // Form1
             // 
