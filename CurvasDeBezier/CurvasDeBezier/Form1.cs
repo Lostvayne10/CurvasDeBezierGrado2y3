@@ -27,7 +27,6 @@ namespace CurvasDeBezier
         {
             Contador = 0;
             InitializeComponent();
-           
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -44,89 +43,45 @@ namespace CurvasDeBezier
                 DibujarLineas(points,Contador-1);
                 Contador = 0;
             }
-        }
+        }/* Agrega los puntos insertados en el plano en un agrego*/
 
         void DibujarLineas(Point[] points, int np)
         {
             panel1.CreateGraphics().Clear(Color.White);
             if (Convert.ToInt32(comboBox1.Text)==3)
-                CalcularCurvas2doGrado(points, DistanciaMayor(points, np));
-            else if(Convert.ToInt32(comboBox1.Text)==4)
-                CalcularCurvas3doGrado(points, DistanciaMayor(points, np));
-            else if (Convert.ToInt32(comboBox1.Text) == 5)
-                CalcularCurvas4doGrado(points, DistanciaMayor(points, np));
-
-            //panel1.CreateGraphics().DrawBeziers(Returnpen(Color.Black), points);
-
-        }
-
-        Pen Returnpen(Color color)
-        {
-            Pen pen1 = new Pen(color, 1);
-            return pen1;
-        }
-
-        double GetDistanciaEuclineana(Point a, Point b)
-        {
-            double resultado;
-            resultado = Math.Sqrt(Math.Pow((b.X-a.X),2)+Math.Pow((b.Y-a.Y),2)); 
-            return resultado;
-        }
-
-        /* Para curvas de 2do y 3er grado*/
-        ////////
-        Point GetPuntoCurva(Point[] cp, double t, int np)
-        {
-            double ax, bx, cx;
-            double ay, by, cy;
-            Double tSquared, tCubed;
-            Point result = new Point();
-
-            /* cálculo de los coeficientes polinomiales */
-
-            cx = 3.0 * (cp[1].X - cp[0].X);
-            bx = 3.0 * (cp[2].X - cp[1].X) - cx;
-            ax = cp[np].X - cp[0].X - cx - bx;
-
-            cy = 3.0 * (cp[1].Y - cp[0].Y);
-            by = 3.0 * (cp[2].Y - cp[1].Y) - cy;
-            ay = cp[np].Y - cp[0].Y - cy - by;
-
-            /* calculo de los parametros evaluados en t */
-            
-            tSquared = t * t;
-            tCubed = tSquared * t;
-
-            result.X = Convert.ToInt32((ax * tCubed) + (bx * tSquared) + (cx * t) + cp[0].X);
-            result.Y = Convert.ToInt32((ay * tCubed) + (by * tSquared) + (cy * t) + cp[0].Y);
-            panel1.CreateGraphics().DrawLine(Returnpen(Color.Yellow), (float)(cp[0].X + (ax * tCubed)), (float)(cp[0].Y+ (ay * tCubed)), (float)(cp[2].X), (float)(cp[2].Y ));
-
-            return result;
-        }
-
-        void CalcularCurva(Point[] cp, int n ,int np)
-        {
-            Point[] curve = new Point[n];
-            double dt;
-            int i;
-
-            dt = 1.0 / (n - 1.0);
-
-            for (i = 0; i <n; i++)
             {
-                curve[i] = GetPuntoCurva(cp, i * dt,np);
-                panel1.CreateGraphics().DrawRectangle(Returnpen(Color.Red), curve[i].X, curve[i].Y, 1, 1);
+                CalcularCurvas2doGrado(points, DistanciaMayor(points, np));
+                CalcularCurvas2doGradoMatricial(points, DistanciaMayor(points, np));
             }
-        }
+            else if(Convert.ToInt32(comboBox1.Text)==4)
+            {
+                CalcularCurvas3doGrado(points, DistanciaMayor(points, np));
+                CalcularCurvas3doGradoMatricial(points, DistanciaMayor(points, np));
+            }
+                
+            else if (Convert.ToInt32(comboBox1.Text) == 5)
+            {
+                CalcularCurvas4doGrado(points, DistanciaMayor(points, np));
+                CalcularCurvas4doGradoMatricial(points, DistanciaMayor(points, np));
+            }
+            
+        }/*Dibuja las diferentes lineas de bezier segun el grado que se selecciono*/
 
-        //////////
+       
+
+       
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             points = new Point[Convert.ToInt32(comboBox1.Text)];
+            Contador = 0;
         }
+        /*   cambia el numero de puntos que se insertaran en el plano    */
 
 
+
+        /// Calculos para sacar las curvas de bezier
+  
 
         void CalcularCurvas2doGrado(Point[] cp, int np)
         {
@@ -136,16 +91,17 @@ namespace CurvasDeBezier
         
             for(int i=0;i<np;i++)
             {
-                //panel1.CreateGraphics().Clear(Color.White);
                 panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l1.X,l1.Y,l2.X,l2.Y);
-                curve[i] = GetPuntoCurva2doGrado(cp, i * t);
+                curve[i] = GetPuntoCurva2doGrado(cp, (float)i * t);
                 panel1.CreateGraphics().DrawLines(Returnpen(Color.Black), points);
-                dibujarCurvaActual(curve,i);
-                //System.Threading.Thread.Sleep(1);
+                dibujarCurvaActual(curve,i, Color.Blue);
+               
             }
-        }
+        }/* Realiza la calculacion de cada punto iterando desde 0 hasta n segun la distancia entre el punto inicial y final
+            en cada iteracion pasa el valor de i * t y los puntos en la curva
+         */
 
-        Point GetPuntoCurva2doGrado(Point[] cp, double t )
+        Point GetPuntoCurva2doGrado(Point[] cp, float t )
         {
             Point resultado = new Point();
             int rx1, ry1,rx2,ry2;
@@ -161,15 +117,19 @@ namespace CurvasDeBezier
             l1 = new Point(rx1,ry1);
             l2 = new Point(rx2, ry2);
             return resultado;
-        }
+        }/*
+            Realiza el calculo de la curva mediante el ingreso de 3 puntos y retorna el valor que s eencuentra en la curva
+         */
 
-        void dibujarCurvaActual(Point [] curva, int n)
+        void dibujarCurvaActual(Point [] curva, int n, Color x)
         {
             for(int i=0;i<n-1;i++)
             {
-                panel1.CreateGraphics().DrawLine(Returnpen(Color.Blue), curva[i].X, curva[i].Y, curva[i+1].X, curva[1+i].Y);
+                panel1.CreateGraphics().DrawLine(Returnpen(x), curva[i].X, curva[i].Y, curva[i+1].X, curva[1+i].Y);
             }
-        }
+        }/*
+            dibuja la curva actual que se genera
+         */
 
         void CalcularCurvas3doGrado(Point[] cp, int np)
         {
@@ -183,15 +143,17 @@ namespace CurvasDeBezier
                 panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l1.X, l1.Y, l2.X, l2.Y);
                 panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l2.X, l2.Y, l3.X, l3.Y);
                 panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l4.X, l4.Y, l5.X, l5.Y);
-                curve[i] = GetPuntoCurva3doGrado(cp, i * t);
+                curve[i] = GetPuntoCurva3doGrado(cp, (float)i * t);
 
                 panel1.CreateGraphics().DrawLines(Returnpen(Color.Black), points);
-                dibujarCurvaActual(curve, i);
+                dibujarCurvaActual(curve, i,Color.Blue);
                 
             }
-        }
+        }/*
+            se realiza las iteraciones para el grado 3
+         */
 
-        Point GetPuntoCurva3doGrado(Point[] cp, double t)
+        Point GetPuntoCurva3doGrado(Point[] cp, float t)
         {
             Point resultado = new Point();
             int rx1, ry1, rx2, ry2,rx3,ry3,rx4,ry4,rx5,ry5;
@@ -219,30 +181,11 @@ namespace CurvasDeBezier
             l5 = new Point(rx5, ry5);
   
             return resultado;
-        }
+        } /*
+            Realiza el calculo del punto en la curva recibiendo 4 puntos
+          */
 
-        int DistanciaMayor(Point[] p, int n)
-        {
-            int resultado;
-            int distancia = 0;
-            resultado = 0;
-
-            resultado = (int)(Math.Sqrt(Math.Pow((p[n-1].X - p[0].X), 2) + Math.Pow((p[n-1].Y - p[0].Y), 2)));
-
-
-            /*for (int i = 0; i < n-1; i++)
-            {
-                distancia = (int)(Math.Sqrt(Math.Pow((p[i + 1].X - p[i].X), 2) + Math.Pow((p[i + 1].Y - p[i].Y), 2)));
-
-                if(distancia>resultado)
-                {
-                    resultado = distancia;
-                }
-            }*/
-
-            return resultado;
-        }
-
+       
 
         void CalcularCurvas4doGrado(Point[] cp, int np)
         {
@@ -261,17 +204,21 @@ namespace CurvasDeBezier
                 panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l6.X, l6.Y, l7.X, l7.Y);
                 panel1.CreateGraphics().DrawLine(Returnpen(Color.White), l8.X, l8.Y, l9.X, l9.Y);
                
-                curve[i] = (GetPuntoCurva4doGrado(cp, i * t));
+                curve[i] = (GetPuntoCurva4doGrado(cp, (float)i * t));
                 
                 panel1.CreateGraphics().DrawLines(Returnpen(Color.Black), points);
 
                 
-                dibujarCurvaActual(curve, i);
+                dibujarCurvaActual(curve, i, Color.Blue);
 
             }
-        }
+        }     /*
+             se realiza el calculo de  los puntos que iran en la linea
+        */
 
-        Point GetPuntoCurva4doGrado(Point[] cp, double t)
+
+
+        Point GetPuntoCurva4doGrado(Point[] cp, float t)
         {
             Point resultado = new Point();
             int rx1, ry1, rx2, ry2, rx3, ry3, rx4, ry4, rx5, ry5,rx6,ry6,rx7,ry7, rx8, ry8, rx9, ry9;
@@ -315,11 +262,185 @@ namespace CurvasDeBezier
             l9 = new Point(rx9, ry9);
             return resultado;
         }
+        /*
+             el calculo del punto en la curva recibiendo 5 puntos
+         */
+
+
+
+        /// Generacion de curvas de bezier mediante el metodo del uso de matrices ///
+        Point GetPuntoCurvas2doGradoMatricial(Point[] cp, float u)
+        {
+            Point Resultado = new Point();
+            float ax, bx, cx, ay, by, cy, x1, x2, x3, y1, y2, y3, u2;
+            u2 = u * u;
+            ax = cp[0].X;
+            bx = cp[1].X;
+            cx = cp[2].X;
+            ay = cp[0].Y;
+            by = cp[1].Y;
+            cy = cp[2].Y;
+            x1 = ax + (-2 * bx) + cx;
+            x2 = (-2 * ax) + (2 * bx);
+            x3 = ax;
+            y1 = ay + (-2 * by) + cy;
+            y2 = (-2 * ay) + (2 * by);
+            y3 = ay;
+
+            Resultado.X = (int)Math.Round((x1 * u2) + (x2 * u) + x3);
+            Resultado.Y = (int)Math.Round((y1 * u2) + (y2 * u) + y3);
+            return Resultado;
+
+
+        }     /*
+             recibe 3 puntos para retornar el valor  en la curva
+        */
+
+
+        /// Generacion de curvas de bezier mediante el metodo del uso de matrices ///
+        /// ///////////////////////////////////////////////////////////////////////////
+
+
+
+        void CalcularCurvas2doGradoMatricial(Point[] cp, int np)
+        {
+            //List<Point> curve = new List<Point>();
+            Point[] curve = new Point[np];
+            float t;
+            t = (float)1 / (float)(np - 1);
+
+            for (int i = 0; i < np; i++)
+            {
+                //panel1.CreateGraphics().Clear(Color.White);
+                curve[i] = (GetPuntoCurvas2doGradoMatricial(cp, (float)i * t));
+            }
+
+            dibujarCurvaActual(curve, np-1, Color.Red);
+        } /* pasa por referencia los puntos y retorna el valor la curva */
+
+
+        Point GetPuntoQ(Point cp, Point cp2, float u)
+        {
+            Point Resultado = new Point();
+            int Qx,Qy;
+            Qx = (int)Math.Round(cp.X + u * (cp2.X - cp.X));
+
+            Qy = (int)Math.Round(cp.Y + u * (cp2.Y - cp.Y));
+            Resultado = new Point(Qx, Qy);
+            return Resultado;
+        }/* retorna el punto Q entre dos punt os*/
+
+
+        void CalcularCurvas3doGradoMatricial(Point[] cp, int np)
+        {
+            //List<Point> curve = new List<Point>();
+            Point[] curve = new Point[np];
+            Point[] curved2 = new Point[2];
+            Point[] curved3 = new Point[2];
+            Point[] curved4 = new Point[2];
+            Point[] curvepuntos = new Point[3];
+
+            float t;
+            t = (float)1 / (float)(np - 1);
+
+            for (int i = 0; i < np; i++)
+            {
+
+                curvepuntos[0] = GetPuntoQ(cp[0], cp[1],(float)i * t);
+                curvepuntos[1] = GetPuntoQ(cp[1], cp[2], (float)i * t);
+                curvepuntos[2] = GetPuntoQ(cp[2], cp[3], (float)i * t);
+
+                curve[i] = (GetPuntoCurvas2doGradoMatricial(curvepuntos, (float)i * t));
+
+            }
+
+            dibujarCurvaActual(curve, np-1, Color.Red);
+        }
+
+
+
+        void CalcularCurvas4doGradoMatricial(Point[] cp2, int np)
+        {
+            //List<Point> curve = new List<Point>();
+            Point[] curve = new Point[np];
+            Point[] curved2 = new Point[2];
+            Point[] curved3 = new Point[2];
+            Point[] curved4 = new Point[2];
+            Point[] curvepuntos = new Point[3];
+            Point[] cp = new Point[4];
 
 
 
 
+            
 
+            float t;
+            t = (float)1 / (float)(np - 1);
+
+            for (int i = 0; i < np; i++)
+            {
+                cp[0] = GetPuntoQ(cp2[0], cp2[1], (float)i * t);
+                cp[1] = GetPuntoQ(cp2[1], cp2[2], (float)i * t);
+                cp[2] = GetPuntoQ(cp2[2], cp2[3], (float)i * t);
+                cp[3] = GetPuntoQ(cp2[3], cp2[4], (float)i * t);
+
+
+                curvepuntos[0] = GetPuntoQ(cp[0], cp[1], (float)i * t);
+
+                curvepuntos[1] = GetPuntoQ(cp[1], cp[2], (float)i * t);
+
+                curvepuntos[2] = GetPuntoQ(cp[2], cp[3], (float)i * t);
+
+
+                curve[i] = (GetPuntoCurvas2doGradoMatricial(curvepuntos, (float)i * t));
+
+                
+
+
+
+            }
+
+            dibujarCurvaActual(curve, np-1, Color.Red);
+        }
+
+
+        /*Utilidades*/
+
+
+        int DistanciaMayor(Point[] p, int n)
+        {
+            int resultado;
+            int distancia = 0;
+            resultado = 0;
+
+            resultado = (int)(Math.Sqrt(Math.Pow((p[n - 1].X - p[0].X), 2) + Math.Pow((p[n - 1].Y - p[0].Y), 2)));
+
+
+            /*for (int i = 0; i < n-1; i++)
+            {
+                distancia = (int)(Math.Sqrt(Math.Pow((p[i + 1].X - p[i].X), 2) + Math.Pow((p[i + 1].Y - p[i].Y), 2)));
+
+                if(distancia>resultado)
+                {
+                    resultado = distancia;
+                }
+            }*/
+
+            return resultado;
+        }
+
+        Pen Returnpen(Color color)
+        {
+            Pen pen1 = new Pen(color, 1);
+            return pen1;
+        }//* retorna el pen del color ingresado *//
+
+        double GetDistanciaEuclineana(Point a, Point b)
+        {
+            double resultado;
+            resultado = Math.Sqrt(Math.Pow((b.X - a.X), 2) + Math.Pow((b.Y - a.Y), 2));
+            return resultado;
+        } /* Retorna la distancia euclineana entre dos puntos*/
 
     }
 }
